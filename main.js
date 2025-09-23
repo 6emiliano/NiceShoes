@@ -199,8 +199,63 @@ function finalizarCompra() {
         return;
     }
     
-    // Confirmar compra
-    let confirmar = confirm("¿Estás seguro de que deseas finalizar la compra?");
+    // Calcular totales para el resumen final
+    let subtotal = 0;
+    
+    console.log("=== RESUMEN FINAL DE COMPRA ===");
+    console.log("Productos en tu carrito:");
+    
+    // Mostrar productos en el carrito y calcular subtotal
+    for (let i = 0; i < carrito.length; i++) {
+        const item = carrito[i];
+        console.log(`${item.nombre} x${item.cantidad} = $${item.subtotal}`);
+        subtotal += item.subtotal;
+    }
+    
+    // Aplicar descuento si existe
+    let montoDescuento = 0;
+    if (descuentoActual > 0) {
+        montoDescuento = subtotal * (descuentoActual / 100);
+        console.log(`Descuento (${descuentoActual}%): -$${montoDescuento.toFixed(2)}`);
+    }
+    
+    // Calcular subtotal con descuento
+    let subtotalConDescuento = subtotal - montoDescuento;
+    
+    // Calcular impuestos
+    let impuestos = subtotalConDescuento * IVA;
+    
+    // Calcular total final
+    let total = subtotalConDescuento + impuestos;
+    
+    // Mostrar resumen en consola
+    console.log("================================");
+    console.log(`Subtotal: $${subtotal.toFixed(2)}`);
+    if (montoDescuento > 0) {
+        console.log(`Descuento: -$${montoDescuento.toFixed(2)}`);
+        console.log(`Subtotal con descuento: $${subtotalConDescuento.toFixed(2)}`);
+    }
+    console.log(`IVA (21%): $${impuestos.toFixed(2)}`);
+    console.log(`TOTAL A PAGAR: $${total.toFixed(2)}`);
+    console.log("================================");
+    
+    // Crear resumen para el alert de confirmación
+    let resumenFinal = `RESUMEN FINAL DE COMPRA:\n\n`;
+    resumenFinal += `Productos:\n`;
+    for (let i = 0; i < carrito.length; i++) {
+        const item = carrito[i];
+        resumenFinal += `• ${item.nombre} x${item.cantidad} = $${item.subtotal}\n`;
+    }
+    resumenFinal += `\nSubtotal: $${subtotal.toFixed(2)}\n`;
+    if (montoDescuento > 0) {
+        resumenFinal += `Descuento (${descuentoActual}%): -$${montoDescuento.toFixed(2)}\n`;
+    }
+    resumenFinal += `IVA (21%): $${impuestos.toFixed(2)}\n`;
+    resumenFinal += `\nTOTAL A PAGAR: $${total.toFixed(2)}\n\n`;
+    resumenFinal += `¿Confirmas la compra?`;
+    
+    // Confirmar compra con el resumen completo
+    let confirmar = confirm(resumenFinal);
     
     if (confirmar) {
         alert("¡Compra realizada con éxito! Gracias por elegir NiceShoes.");
