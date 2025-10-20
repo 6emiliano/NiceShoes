@@ -3,32 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NiceShoes - Simulador de Tienda</title>
+    <title>NiceShoes - Tienda de Zapatillas</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>NiceShoes</h1>
+        <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>🏀 NiceShoes</h1>
+                <span>Tu tienda de básquet</span>
+            </div>
+            
+            <nav class="header-nav">
+                <button id="adminBtn" class="admin-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <div class="cart-icon" id="cartIcon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </nav>
+        </div>
     </header>
-    <main>
-        <section>
-            <h2>Simulador de Tienda de Zapatillas</h2>
-            <p>
-                Bienvenido al simulador de nuestra tienda de zapatillas de básquet y moda. 
-                Este sistema te permite explorar nuestro catálogo de zapatillas, agregar productos a tu carrito, 
-                aplicar descuentos especiales y calcular el total de tu compra incluyendo impuestos.
-            </p>
-            <p>
-                Para usar el simulador, abre la consola del navegador (F12) y haz clic en "Iniciar Simulador". 
-                Podrás interactuar con el sistema mediante cuadros de diálogo y ver toda la información 
-                detallada en la consola. ¡Disfruta explorando nuestras zapatillas!
-            </p>
-            <button id="iniciarSimulador">Iniciar Simulador</button>
-            <div id="resultado"></div>
+
+    
+    <section class="hero">
+        <div class="hero-content">
+            <div id="mensajeBienvenida" class="welcome-message"></div>
+            <div class="hero-badges">
+                <div class="badge">
+                    <i class="fas fa-shipping-fast"></i>
+                    <span>Envío gratis en compras +$50.000</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-credit-card"></i>
+                    <span>3 cuotas sin interés</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>100% Original</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catálogo principal -->
+    <main class="main-content">
+        <section class="catalog-section">
+            <div class="section-header">
+                <h2>Nuestros Productos</h2>
+                <div id="contadorProductos" class="product-count"></div>
+            </div>
+            
+            <!-- Grid de productos -->
+            <div id="catalogoGrid" class="products-grid"></div>
         </section>
     </main>
-    <footer>
-        <p>&copy; 2025 NiceShoes. Todos los derechos reservados.</p>
+
+    <!-- Modal del carrito -->
+    <div id="cartModal" class="cart-modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🛒 Tu Carrito</h3>
+                <button class="close-btn" id="closeCart">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="cartItems" class="cart-items"></div>
+                <div id="cartSummary" class="cart-summary"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="clearCart" class="btn btn-outline">Vaciar Carrito</button>
+                <button id="checkoutBtn" class="btn btn-primary">Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de administración -->
+    <div id="adminModal" class="admin-modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Panel de Administración</h3>
+                <button class="close-btn" id="closeAdmin">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="create">Crear Producto</button>
+                    <button class="tab-btn" data-tab="search">Buscar</button>
+                    <button class="tab-btn" data-tab="filter">Filtrar</button>
+                    <button class="tab-btn" data-tab="prices">Precios</button>
+                    <button class="tab-btn" data-tab="discount">Descuentos</button>
+                </div>
+
+                <!-- Tab: Crear Producto -->
+                <div id="createTab" class="tab-content active">
+                    <form id="formCrearProducto">
+                        <div class="form-group">
+                            <label for="nombreProducto">Nombre del Producto</label>
+                            <input type="text" id="nombreProducto" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="precioProducto">Precio ($)</label>
+                                <input type="number" id="precioProducto" min="1" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="stockProducto">Stock</label>
+                                <input type="number" id="stockProducto" min="0" value="5" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoriaProducto">Categoría</label>
+                            <select id="categoriaProducto" required>
+                                <option value="basquet">🏀 Básquet</option>
+                                <option value="running">🏃 Running</option>
+                                <option value="casual">👟 Casual</option>
+                                <option value="moda">✨ Moda</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="imagenProducto">URL de Imagen (opcional)</label>
+                            <input type="url" id="imagenProducto" placeholder="https://ejemplo.com/imagen.jpg">
+                            <small style="color: var(--text-light); font-size: 0.8rem; margin-top: 5px; display: block;">
+                                Si no ingresas URL, se usará imagen genérica por categoría
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Crear Producto</button>
+                    </form>
+                </div>
+
+                <!-- Tab: Buscar -->
+                <div id="searchTab" class="tab-content">
+                    <form id="formBuscarProducto">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="criterioBusqueda">Buscar por</label>
+                                <select id="criterioBusqueda" required>
+                                    <option value="nombre">Nombre</option>
+                                    <option value="id">ID</option>
+                                    <option value="categoria">Categoría</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="valorBusqueda">Valor</label>
+                                <input type="text" id="valorBusqueda" placeholder="Ingresa el valor..." required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                    </form>
+                </div>
+
+                <!-- Tab: Filtrar -->
+                <div id="filterTab" class="tab-content">
+                    <form id="formFiltrarProductos">
+                        <div class="form-group">
+                            <label for="tipoFiltro">Filtrar por</label>
+                            <select id="tipoFiltro" required>
+                                <option value="">-- Selecciona criterio --</option>
+                                <option value="precio">Precio</option>
+                                <option value="categoria">Categoría</option>
+                                <option value="stock">Stock</option>
+                            </select>
+                        </div>
+                        
+                        <div id="filtrosPrecio" class="filter-options hidden">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="precioMin">Precio Mín ($)</label>
+                                    <input type="number" id="precioMin" min="0" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="precioMax">Precio Máx ($)</label>
+                                    <input type="number" id="precioMax" min="0" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="filtrosCategoria" class="filter-options hidden">
+                            <div class="form-group">
+                                <label for="categoriaFiltro">Categoría</label>
+                                <select id="categoriaFiltro">
+                                    <option value="basquet">🏀 Básquet</option>
+                                    <option value="running">🏃 Running</option>
+                                    <option value="casual">👟 Casual</option>
+                                    <option value="moda">✨ Moda</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="filtrosStock" class="filter-options hidden">
+                            <div class="form-group">
+                                <label for="stockMinimo">Stock Mínimo</label>
+                                <input type="number" id="stockMinimo" min="0" value="1">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Aplicar Filtro</button>
+                    </form>
+                </div>
+
+                <!-- Tab: Precios -->
+                <div id="pricesTab" class="tab-content">
+                    <form id="formActualizarPrecios">
+                        <div class="form-group">
+                            <label for="porcentajeAumento">Porcentaje de Aumento (%)</label>
+                            <input type="number" id="porcentajeAumento" min="0" max="100" step="0.1" value="21">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="confirmarActualizacion">
+                                <span class="checkmark"></span>
+                                Confirmar actualización permanente
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Actualizar Precios</button>
+                    </form>
+                </div>
+
+                <!-- Tab: Descuentos -->
+                <div id="discountTab" class="tab-content">
+                    <form id="formDescuento">
+                        <div class="form-group">
+                            <label for="porcentajeDescuento">Descuento (0-50%)</label>
+                            <input type="number" id="porcentajeDescuento" min="0" max="50" step="1" value="10">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Aplicar Descuento</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de checkout -->
+    <div id="checkoutModal" class="checkout-modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✅ Confirmar Compra</h3>
+                <button class="close-btn" id="closeCheckout">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="checkoutSummary"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="cancelCheckout" class="btn btn-outline">Cancelar</button>
+                <button id="confirmPurchase" class="btn btn-success">Confirmar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados de búsqueda/filtros -->
+    <div id="resultsSection" class="results-section hidden">
+        <div class="section-header">
+            <h3 id="resultsTitle">Resultados</h3>
+            <button id="clearResults" class="btn btn-outline-sm">Limpiar</button>
+        </div>
+        <div id="resultsContent" class="products-grid"></div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div id="notifications" class="notifications"></div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>🏀 NiceShoes</h4>
+                <p>Tu tienda de confianza para zapatillas de básquet y deportivas.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Información</h4>
+                <ul>
+                    <li>Envíos a todo el país</li>
+                    <li>Garantía de originalidad</li>
+                    <li>3 cuotas sin interés</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p>info@niceshoes.com</p>
+                <p>WhatsApp: +54 11 1234-5678</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 NiceShoes. Todos los derechos reservados.</p>
+        </div>
     </footer>
-    <script src="main.js"></script>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
