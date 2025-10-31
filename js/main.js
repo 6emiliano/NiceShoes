@@ -33,6 +33,15 @@ let carrito = [];
 let descuentoActual = 0;
 const IVA = 0.21;
 
+// Configuración FakeStore API
+const FAKESTORE_API_URL = 'https://fakestoreapi.com/products';
+const CATEGORIA_MAPPING = {
+    'electronics': 'basquet',
+    'jewelery': 'moda',
+    "men's clothing": 'casual',
+    "women's clothing": 'running'
+};
+
 // Mensajes de bienvenida aleatorios
 const mensajesBienvenida = [
     "¡Bienvenido a NiceShoes! 🏀 Las mejores zapatillas",
@@ -59,9 +68,7 @@ function guardarEnStorage() {
         localStorage.setItem('niceshoes_carrito', JSON.stringify(carrito));
         localStorage.setItem('niceshoes_descuento', descuentoActual.toString());
         localStorage.setItem('niceshoes_contador_id', Producto.contadorId.toString());
-        console.log('Datos guardados en localStorage');
     } catch (error) {
-        console.error('Error al guardar en localStorage:', error);
         showNotification('Error al guardar datos localmente', 'error');
     }
 }
@@ -95,23 +102,75 @@ function cargarDesdeStorage() {
             Producto.contadorId = parseInt(contadorStorage);
         }
         
-        console.log('Datos cargados desde localStorage');
         return true;
     } catch (error) {
-        console.error('Error al cargar desde localStorage:', error);
         return false;
+    }
+}
+
+// FUNCIONES DE CARGA DE DATOS
+
+async function cargarProductosDesdeAPI() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const catalogoGrid = document.getElementById('catalogoGrid');
+    
+    try {
+        // Mostrar loading spinner
+        loadingSpinner.classList.remove('hidden');
+        catalogoGrid.classList.add('hidden');
+        
+        // Fetch datos de FakeStore API
+        const response = await fetch(FAKESTORE_API_URL);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const apiProducts = await response.json();
+        
+        // Mapear productos API a nuestra estructura
+        productos = apiProducts.map(apiProduct => {
+            const categoria = CATEGORIA_MAPPING[apiProduct.category] || 'casual';
+            const precio = Math.round(apiProduct.price * 100); // Convertir a pesos argentinos aproximadamente
+            const stock = Math.floor(Math.random() * 10) + 1; // Stock aleatorio entre 1-10
+            
+            const producto = new Producto(
+                apiProduct.title,
+                precio,
+                1,
+                categoria,
+                stock,
+                apiProduct.image
+            );
+            
+            // Mantener el ID original de la API para referencia
+            producto.apiId = apiProduct.id;
+            return producto;
+        });
+        
+        showNotification('✅ Productos cargados desde FakeStore API', 'success');
+        guardarEnStorage();
+        
+    } catch (error) {
+        showNotification('⚠️ Error al cargar desde API, usando datos locales', 'warning');
+        inicializarProductosDefault();
+    } finally {
+        // Ocultar loading spinner
+        loadingSpinner.classList.add('hidden');
+        catalogoGrid.classList.remove('hidden');
+        renderizarCatalogo();
     }
 }
 
 function inicializarProductosDefault() {
     if (productos.length === 0) {
         productos = [
-            new Producto("Air Jordan 1 Retro", 180, 1, "basquet", 5, "https://acdn-us.mitiendanube.com/stores/001/160/313/products/f6c4b46e1-e4854ab78d79c1611016052167644378-1024-1024.webp"),
-            new Producto("Nike Dunk Low", 120, 1, "casual", 8, "https://acdn-us.mitiendanube.com/stores/986/786/products/img_68031-78526e419e0fb103c516915072797706-1024-1024.webp"),
-            new Producto("Adidas Forum", 100, 1, "basquet", 3, "https://images-cdn.ubuy.com.ar/65c519e2c2b3562b9e488927-adidas-forum-low-men-039-s.jpg"),
-            new Producto("Converse Chuck Taylor", 80, 1, "casual", 10, "https://acdn-us.mitiendanube.com/stores/001/159/143/products/img_0783-6756beb465decda3dc17134505504531-1024-1024.webp"),
-            new Producto("Nike Air Force 1", 110, 1, "moda", 6, "https://www.gotemkicks.com/cdn/shop/products/IMG_0207_720x.jpg?v=1677195765"),
-            new Producto("Jordan 4 Retro", 220, 1, "basquet", 2, "http://admin.digitalsport.com.ar/files/uploads/DIONYSOS%202025/JORDAN%204%20SB/3e3aa5a2-da92-4bac-9ee1-f6de30d3c8d1.jpg")
+            new Producto("Air Jordan 1 Retro", 18000, 1, "basquet", 5, "https://acdn-us.mitiendanube.com/stores/001/160/313/products/f6c4b46e1-e4854ab78d79c1611016052167644378-1024-1024.webp"),
+            new Producto("Nike Dunk Low", 12000, 1, "casual", 8, "https://acdn-us.mitiendanube.com/stores/986/786/products/img_68031-78526e419e0fb103c516915072797706-1024-1024.webp"),
+            new Producto("Adidas Forum", 10000, 1, "basquet", 3, "https://images-cdn.ubuy.com.ar/65c519e2c2b3562b9e488927-adidas-forum-low-men-039-s.jpg"),
+            new Producto("Converse Chuck Taylor", 8000, 1, "casual", 10, "https://acdn-us.mitiendanube.com/stores/001/159/143/products/img_0783-6756beb465decda3dc17134505504531-1024-1024.webp"),
+            new Producto("Nike Air Force 1", 11000, 1, "moda", 6, "https://www.gotemkicks.com/cdn/shop/products/IMG_0207_720x.jpg?v=1677195765"),
+            new Producto("Jordan 4 Retro", 22000, 1, "basquet", 2, "http://admin.digitalsport.com.ar/files/uploads/DIONYSOS%202025/JORDAN%204%20SB/3e3aa5a2-da92-4bac-9ee1-f6de30d3c8d1.jpg")
         ];
         guardarEnStorage();
     }
@@ -141,7 +200,6 @@ function mostrarMensajeBienvenidaAleatorio() {
     const mensaje = mensajesBienvenida[indiceAleatorio];
     
     mensajeBienvenida.innerHTML = `<h2>${mensaje}</h2>`;
-    console.log(`Mensaje de bienvenida: ${mensaje}`);
 }
 
 // Imagen para prod
@@ -512,8 +570,19 @@ function aplicarDescuento(porcentaje) {
     return true;
 }
 
-function actualizarPrecios(porcentaje) {
-    if (!confirm(`¿Confirmas actualizar todos los precios con ${porcentaje}% de aumento?`)) {
+async function actualizarPrecios(porcentaje) {
+    const result = await Swal.fire({
+        title: '¿Confirmar actualización?',
+        text: `Se actualizarán todos los precios con ${porcentaje}% de aumento`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#007bff',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sí, actualizar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) {
         return false;
     }
     
@@ -523,7 +592,14 @@ function actualizarPrecios(porcentaje) {
         producto.subtotal = producto.calcularSubtotal();
     });
     
-    showNotification(`📊 Precios actualizados (+${porcentaje}%)`, 'success');
+    await Swal.fire({
+        title: '¡Actualización exitosa!',
+        text: `Precios actualizados (+${porcentaje}%)`,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+    });
+    
     actualizarTodaLaUI();
     return true;
 }
@@ -603,8 +679,6 @@ function confirmarCompra() {
     historial.push(compra);
     localStorage.setItem('niceshoes_historial', JSON.stringify(historial));
     
-    console.log('Compra finalizada:', compra);
-    
     // Limpiar carrito
     carrito = [];
     descuentoActual = 0;
@@ -653,16 +727,18 @@ function switchTab(tabName) {
 
 // EVENT LISTENERS
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Cargar datos
-    cargarDesdeStorage();
-    inicializarProductosDefault();
+    const hadStoredData = cargarDesdeStorage();
     
+    // Si no hay productos almacenados, cargar desde API
+    if (productos.length === 0) {
+        await cargarProductosDesdeAPI();
+    } else {
+        renderizarCatalogo();
+    }
     
     mostrarMensajeBienvenidaAleatorio();
-    
-    
-    renderizarCatalogo();
     renderizarCarrito();
     
     
@@ -822,13 +898,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('resultsSection').classList.add('hidden');
     });
     
-    console.log('🏀 NiceShoes cargado exitosamente - Estilo hoopshoes.net');
     showNotification('Sistema inicializado correctamente', 'success');
 });
 
-// Funciones globales para acceso desde HTML
+
 window.changeQuantity = changeQuantity;
 window.agregarAlCarrito = agregarAlCarrito;
 window.eliminarDelCarrito = eliminarDelCarrito;
-
-console.log('NiceShoes - Simulador de Tienda estilo hoopshoes.net v2.0 cargado');
