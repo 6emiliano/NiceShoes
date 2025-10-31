@@ -110,16 +110,22 @@ function cargarDesdeStorage() {
 
 // FUNCIONES DE CARGA DE DATOS
 
-async function cargarProductosDesdeAPI() {
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const catalogoGrid = document.getElementById('catalogoGrid');
+function crearProductosOriginales() {
+    // Resetear contador para productos originales
+    Producto.contadorId = 0;
     
+    return [
+        new Producto("Air Jordan 1 Retro", 18000, 1, "basquet", 5, "https://acdn-us.mitiendanube.com/stores/001/160/313/products/f6c4b46e1-e4854ab78d79c1611016052167644378-1024-1024.webp"),
+        new Producto("Nike Dunk Low", 12000, 1, "casual", 8, "https://acdn-us.mitiendanube.com/stores/986/786/products/img_68031-78526e419e0fb103c516915072797706-1024-1024.webp"),
+        new Producto("Adidas Forum", 10000, 1, "basquet", 3, "https://images-cdn.ubuy.com.ar/65c519e2c2b3562b9e488927-adidas-forum-low-men-039-s.jpg"),
+        new Producto("Converse Chuck Taylor", 8000, 1, "casual", 10, "https://acdn-us.mitiendanube.com/stores/001/159/143/products/img_0783-6756beb465decda3dc17134505504531-1024-1024.webp"),
+        new Producto("Nike Air Force 1", 11000, 1, "moda", 6, "https://www.gotemkicks.com/cdn/shop/products/IMG_0207_720x.jpg?v=1677195765"),
+        new Producto("Jordan 4 Retro", 22000, 1, "basquet", 2, "http://admin.digitalsport.com.ar/files/uploads/DIONYSOS%202025/JORDAN%204%20SB/3e3aa5a2-da92-4bac-9ee1-f6de30d3c8d1.jpg")
+    ];
+}
+
+async function cargarProductosFiltradosAPI() {
     try {
-        // Mostrar loading spinner
-        loadingSpinner.classList.remove('hidden');
-        catalogoGrid.classList.add('hidden');
-        
-        // Fetch datos de FakeStore API
         const response = await fetch(FAKESTORE_API_URL);
         
         if (!response.ok) {
@@ -128,11 +134,25 @@ async function cargarProductosDesdeAPI() {
         
         const apiProducts = await response.json();
         
-        // Mapear productos API a nuestra estructura
-        productos = apiProducts.map(apiProduct => {
-            const categoria = CATEGORIA_MAPPING[apiProduct.category] || 'casual';
-            const precio = Math.round(apiProduct.price * 100); // Convertir a pesos argentinos aproximadamente
-            const stock = Math.floor(Math.random() * 10) + 1; // Stock aleatorio entre 1-10
+        // Filtrar solo productos relevantes de ropa/calzado
+        const productosRelevantes = apiProducts.filter(product => {
+            const title = product.title.toLowerCase();
+            const category = product.category.toLowerCase();
+            
+            // Filtrar por categorías de ropa y palabras clave relacionadas con calzado/deportes
+            return (category.includes('clothing') || category.includes('jewelery')) &&
+                   (title.includes('shirt') || title.includes('jacket') || title.includes('bag') || 
+                    title.includes('necklace') || title.includes('ring') || title.includes('cotton'));
+        });
+        
+        // Limitar a 6 productos para balance
+        const productosLimitados = productosRelevantes.slice(0, 6);
+        
+        // Mapear productos API a nuestra estructura con IDs a partir del 100
+        return productosLimitados.map((apiProduct, index) => {
+            const categoria = CATEGORIA_MAPPING[apiProduct.category] || 'moda';
+            const precio = Math.round(apiProduct.price * 100); // Convertir a pesos argentinos
+            const stock = Math.floor(Math.random() * 8) + 3; // Stock aleatorio entre 3-10
             
             const producto = new Producto(
                 apiProduct.title,
@@ -143,17 +163,47 @@ async function cargarProductosDesdeAPI() {
                 apiProduct.image
             );
             
-            // Mantener el ID original de la API para referencia
+            // Asignar ID personalizado para evitar conflictos
+            producto.id = 100 + index + 1;
             producto.apiId = apiProduct.id;
             return producto;
         });
         
-        showNotification('✅ Productos cargados desde FakeStore API', 'success');
+    } catch (error) {
+        return []; // Retornar array vacío si falla la API
+    }
+}
+
+async function cargarProductosHibridos() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const catalogoGrid = document.getElementById('catalogoGrid');
+    
+    try {
+        // Mostrar loading spinner
+        loadingSpinner.classList.remove('hidden');
+        catalogoGrid.classList.add('hidden');
+        
+        // 1. Crear productos originales
+        const productosOriginales = crearProductosOriginales();
+        
+        // 2. Cargar productos filtrados de API
+        const productosAPI = await cargarProductosFiltradosAPI();
+        
+        // 3. Combinar ambos arrays
+        productos = [...productosOriginales, ...productosAPI];
+        
+        // Ajustar contador de IDs para futuras creaciones
+        Producto.contadorId = Math.max(...productos.map(p => p.id));
+        
+        const totalOriginales = productosOriginales.length;
+        const totalAPI = productosAPI.length;
+        
+        showNotification(`✅ Catálogo híbrido cargado: ${totalOriginales} productos originales + ${totalAPI} de API`, 'success');
         guardarEnStorage();
         
     } catch (error) {
-        showNotification('⚠️ Error al cargar desde API, usando datos locales', 'warning');
-        inicializarProductosDefault();
+        showNotification('⚠️ Error en carga híbrida, usando solo productos originales', 'warning');
+        productos = crearProductosOriginales();
     } finally {
         // Ocultar loading spinner
         loadingSpinner.classList.add('hidden');
@@ -731,9 +781,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Cargar datos
     const hadStoredData = cargarDesdeStorage();
     
-    // Si no hay productos almacenados, cargar desde API
+    // Si no hay productos almacenados, cargar catálogo híbrido
     if (productos.length === 0) {
-        await cargarProductosDesdeAPI();
+        await cargarProductosHibridos();
     } else {
         renderizarCatalogo();
     }
