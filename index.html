@@ -6,7 +6,7 @@
     <title>NiceShoes - Tienda de Zapatillas</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- SweetAlert2 -->
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
@@ -50,7 +50,7 @@
         </div>
     </section>
 
-    <!-- Catálogo principal -->
+    <!-- Catalogo -->
     <main class="main-content">
         <section class="catalog-section">
             <div class="section-header">
@@ -58,18 +58,18 @@
                 <div id="contadorProductos" class="product-count"></div>
             </div>
             
-            <!-- Loading Spinner -->
+            <!-- Spinner -->
             <div id="loadingSpinner" class="loading-spinner hidden">
                 <div class="spinner"></div>
                 <p>Cargando productos desde la API...</p>
             </div>
             
-            <!-- Grid de productos -->
+            <!-- productos -->
             <div id="catalogoGrid" class="products-grid"></div>
         </section>
     </main>
 
-    <!-- Modal del carrito -->
+    <!-- carrito -->
     <div id="cartModal" class="cart-modal hidden">
         <div class="modal-overlay"></div>
         <div class="modal-content">
@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    <!-- Modal de administración -->
+    <!-- admin -->
     <div id="adminModal" class="admin-modal hidden">
         <div class="modal-overlay"></div>
         <div class="modal-content">
@@ -112,7 +112,7 @@
                     <button class="tab-btn" data-tab="discount">Descuentos</button>
                 </div>
 
-                <!-- Tab: Crear Producto -->
+                <!-- Crear prod -->
                 <div id="createTab" class="tab-content active">
                     <form id="formCrearProducto">
                         <div class="form-group">
@@ -149,7 +149,7 @@
                     </form>
                 </div>
 
-                <!-- Tab: Buscar -->
+                <!-- Buscar -->
                 <div id="searchTab" class="tab-content">
                     <form id="formBuscarProducto">
                         <div class="form-row">
@@ -170,7 +170,7 @@
                     </form>
                 </div>
 
-                <!-- Tab: Filtrar -->
+                <!-- filtro -->
                 <div id="filterTab" class="tab-content">
                     <form id="formFiltrarProductos">
                         <div class="form-group">
@@ -219,7 +219,7 @@
                     </form>
                 </div>
 
-                <!-- Tab: Precios -->
+                <!-- Precios -->
                 <div id="pricesTab" class="tab-content">
                     <form id="formActualizarPrecios">
                         <div class="form-group">
@@ -237,7 +237,7 @@
                     </form>
                 </div>
 
-                <!-- Tab: Descuentos -->
+                <!-- Desc -->
                 <div id="discountTab" class="tab-content">
                     <form id="formDescuento">
                         <div class="form-group">
@@ -251,7 +251,7 @@
         </div>
     </div>
 
-    <!-- Modal de checkout -->
+    <!-- Checkout -->
     <div id="checkoutModal" class="checkout-modal hidden">
         <div class="modal-overlay"></div>
         <div class="modal-content">
@@ -273,7 +273,7 @@
         </div>
     </div>
 
-    <!-- Resultados de búsqueda/filtros -->
+    <!-- Resultados  -->
     <div id="resultsSection" class="results-section hidden">
         <div class="section-header">
             <h3 id="resultsTitle">Resultados</h3>
@@ -282,7 +282,7 @@
         <div id="resultsContent" class="products-grid"></div>
     </div>
 
-    <!-- Notificaciones -->
+    <!-- Noti -->
     <div id="notifications" class="notifications"></div>
 
     <!-- Footer -->

@@ -174,7 +174,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* Main Content */
+/* Contenidos */
 .main-content {
     max-width: var(--container-width);
     margin: 0 auto;
@@ -202,7 +202,7 @@ body {
     border-radius: 20px;
 }
 
-/* Products Grid */
+
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -389,7 +389,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* Modales */
+/* Menu */
 .cart-modal, .admin-modal, .checkout-modal {
     position: fixed;
     top: 0;
@@ -649,7 +649,7 @@ body {
     padding: 30px 20px;
 }
 
-/* Notificaciones */
+/* Noti */
 .notifications {
     position: fixed;
     top: calc(var(--header-height) + 20px);
@@ -749,7 +749,7 @@ body {
     font-size: 0.85rem;
 }
 
-/* Loading Spinner */
+/*  Spinner */
 .loading-spinner {
     display: flex;
     flex-direction: column;

@@ -33,7 +33,7 @@ let carrito = [];
 let descuentoActual = 0;
 const IVA = 0.21;
 
-// Configuración FakeStore API
+// API fakestore
 const FAKESTORE_API_URL = 'https://fakestoreapi.com/products';
 const CATEGORIA_MAPPING = {
     'electronics': 'basquet',
@@ -42,7 +42,7 @@ const CATEGORIA_MAPPING = {
     "women's clothing": 'running'
 };
 
-// Mensajes de bienvenida aleatorios
+// random bienvenida
 const mensajesBienvenida = [
     "¡Bienvenido a NiceShoes! 🏀 Las mejores zapatillas",
     "¡Hola! 👋 Encuentra tu estilo perfecto aquí",
@@ -52,7 +52,7 @@ const mensajesBienvenida = [
     "¡Hey! 🔥 Descubre las últimas tendencias en calzado"
 ];
 
-// Imágenes genericas
+// Imagenes back up
 const imagenesGenericas = {
     'basquet': 'https://media.a24.com/p/e857efde1da985b8bcdcef1867e9dcd1/adjuntos/296/imagenes/008/190/0008190498/las-medidas-la-cancha-basquetbol.jpeg',
     'casual': 'https://media.revistagq.com/photos/5ca5fc2033e7510376153a8b/master/w_1600,c_limit/dress_code_casual_chic_gq_4834.jpg',
@@ -108,19 +108,19 @@ function cargarDesdeStorage() {
     }
 }
 
-// FUNCIONES DE CARGA DE DATOS
+// CARGA DE DATOS
 
 function crearProductosOriginales() {
     // Resetear contador para productos originales
     Producto.contadorId = 0;
     
     return [
-        new Producto("Air Jordan 1 Retro", 18000, 1, "basquet", 5, "https://acdn-us.mitiendanube.com/stores/001/160/313/products/f6c4b46e1-e4854ab78d79c1611016052167644378-1024-1024.webp"),
-        new Producto("Nike Dunk Low", 12000, 1, "casual", 8, "https://acdn-us.mitiendanube.com/stores/986/786/products/img_68031-78526e419e0fb103c516915072797706-1024-1024.webp"),
-        new Producto("Adidas Forum", 10000, 1, "basquet", 3, "https://images-cdn.ubuy.com.ar/65c519e2c2b3562b9e488927-adidas-forum-low-men-039-s.jpg"),
-        new Producto("Converse Chuck Taylor", 8000, 1, "casual", 10, "https://acdn-us.mitiendanube.com/stores/001/159/143/products/img_0783-6756beb465decda3dc17134505504531-1024-1024.webp"),
-        new Producto("Nike Air Force 1", 11000, 1, "moda", 6, "https://www.gotemkicks.com/cdn/shop/products/IMG_0207_720x.jpg?v=1677195765"),
-        new Producto("Jordan 4 Retro", 22000, 1, "basquet", 2, "http://admin.digitalsport.com.ar/files/uploads/DIONYSOS%202025/JORDAN%204%20SB/3e3aa5a2-da92-4bac-9ee1-f6de30d3c8d1.jpg")
+        new Producto("Air Jordan 1 Retro", 180, 1, "basquet", 5, "https://acdn-us.mitiendanube.com/stores/001/160/313/products/f6c4b46e1-e4854ab78d79c1611016052167644378-1024-1024.webp"),
+        new Producto("Nike Dunk Low", 120, 1, "casual", 8, "https://acdn-us.mitiendanube.com/stores/986/786/products/img_68031-78526e419e0fb103c516915072797706-1024-1024.webp"),
+        new Producto("Adidas Forum", 100, 1, "basquet", 3, "https://images-cdn.ubuy.com.ar/65c519e2c2b3562b9e488927-adidas-forum-low-men-039-s.jpg"),
+        new Producto("Converse Chuck Taylor", 80, 1, "casual", 10, "https://acdn-us.mitiendanube.com/stores/001/159/143/products/img_0783-6756beb465decda3dc17134505504531-1024-1024.webp"),
+        new Producto("Nike Air Force 1", 110, 1, "moda", 6, "https://www.gotemkicks.com/cdn/shop/products/IMG_0207_720x.jpg?v=1677195765"),
+        new Producto("Jordan 4 Retro", 220, 1, "basquet", 2, "http://admin.digitalsport.com.ar/files/uploads/DIONYSOS%202025/JORDAN%204%20SB/3e3aa5a2-da92-4bac-9ee1-f6de30d3c8d1.jpg")
     ];
 }
 
@@ -134,24 +134,24 @@ async function cargarProductosFiltradosAPI() {
         
         const apiProducts = await response.json();
         
-        // Filtrar solo productos relevantes de ropa/calzado
+        // Filtrar  ropa/calzado
         const productosRelevantes = apiProducts.filter(product => {
             const title = product.title.toLowerCase();
             const category = product.category.toLowerCase();
             
-            // Filtrar por categorías de ropa y palabras clave relacionadas con calzado/deportes
+            // Filtrar por  ropa y palabras clave calzado/deportes
             return (category.includes('clothing') || category.includes('jewelery')) &&
                    (title.includes('shirt') || title.includes('jacket') || title.includes('bag') || 
                     title.includes('necklace') || title.includes('ring') || title.includes('cotton'));
         });
         
-        // Limitar a 6 productos para balance
+        // Limitar a 6 productos 
         const productosLimitados = productosRelevantes.slice(0, 6);
         
-        // Mapear productos API a nuestra estructura con IDs a partir del 100
+        // API a ID + 100
         return productosLimitados.map((apiProduct, index) => {
             const categoria = CATEGORIA_MAPPING[apiProduct.category] || 'moda';
-            const precio = Math.round(apiProduct.price * 100); // Convertir a pesos argentinos
+            const precio = Math.round(apiProduct.price * 0.8); // Convertir precio 
             const stock = Math.floor(Math.random() * 8) + 3; // Stock aleatorio entre 3-10
             
             const producto = new Producto(
@@ -163,14 +163,14 @@ async function cargarProductosFiltradosAPI() {
                 apiProduct.image
             );
             
-            // Asignar ID personalizado para evitar conflictos
+            // Asignar ID 
             producto.id = 100 + index + 1;
             producto.apiId = apiProduct.id;
             return producto;
         });
         
     } catch (error) {
-        return []; // Retornar array vacío si falla la API
+        return []; // Array vacío si falla la API
     }
 }
 
@@ -179,7 +179,7 @@ async function cargarProductosHibridos() {
     const catalogoGrid = document.getElementById('catalogoGrid');
     
     try {
-        // Mostrar loading spinner
+        // loading spinner
         loadingSpinner.classList.remove('hidden');
         catalogoGrid.classList.add('hidden');
         
@@ -192,7 +192,7 @@ async function cargarProductosHibridos() {
         // 3. Combinar ambos arrays
         productos = [...productosOriginales, ...productosAPI];
         
-        // Ajustar contador de IDs para futuras creaciones
+        // Ajustar contador de IDs 
         Producto.contadorId = Math.max(...productos.map(p => p.id));
         
         const totalOriginales = productosOriginales.length;
@@ -205,7 +205,7 @@ async function cargarProductosHibridos() {
         showNotification('⚠️ Error en carga híbrida, usando solo productos originales', 'warning');
         productos = crearProductosOriginales();
     } finally {
-        // Ocultar loading spinner
+        // Ocultar  spinner
         loadingSpinner.classList.add('hidden');
         catalogoGrid.classList.remove('hidden');
         renderizarCatalogo();
@@ -242,7 +242,7 @@ function showNotification(message, type = 'info') {
     }, 4000);
 }
 
-// FUNCIONES DE UI/DOM
+// DOM
 
 function mostrarMensajeBienvenidaAleatorio() {
     const mensajeBienvenida = document.getElementById('mensajeBienvenida');
@@ -262,7 +262,7 @@ function obtenerImagenProducto(producto) {
         return imagenesGenericas[producto.categoria] || imagenesGenericas['casual'];
 }
 
-// Función auxiliar para crear elemento imagen con fallback
+// imagen con fallback
 function crearElementoImagen(producto) {
     const categoryEmoji = {
         'basquet': '🏀',
@@ -296,7 +296,7 @@ function renderizarCatalogo() {
     // Actualizar contador
     contadorProductos.textContent = `${productos.length} productos disponibles`;
     
-    // Renderizar cada producto
+    // crear prod
     productos.forEach(producto => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card fade-in';
@@ -354,7 +354,7 @@ function renderizarCarrito() {
     const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
     cartCount.textContent = totalItems;
     
-    // Limpiar contenido del modal
+    // Limpiar contenido
     cartItems.innerHTML = '';
     
     if (carrito.length === 0) {
@@ -363,7 +363,7 @@ function renderizarCarrito() {
         return;
     }
     
-    // Renderizar items del carrito
+    // items del carrito
     let subtotal = 0;
     carrito.forEach((item, index) => {
         const cartItem = document.createElement('div');
@@ -398,7 +398,7 @@ function renderizarCarrito() {
     let impuestos = subtotalConDescuento * IVA;
     let total = subtotalConDescuento + impuestos;
     
-    // Mostrar resumen
+    // mostrar resumen 
     cartSummary.innerHTML = `
         <div class="summary-line">
             <span>Subtotal:</span>
@@ -431,7 +431,7 @@ function mostrarResultados(resultados, titulo) {
     if (resultados.length === 0) {
         resultsContent.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 40px;">No se encontraron resultados</p>';
     } else {
-        // misma logica catlogo principal
+        
         resultados.forEach(producto => {
             const productCard = document.createElement('div');
             productCard.className = 'product-card fade-in';
@@ -733,7 +733,7 @@ function confirmarCompra() {
     carrito = [];
     descuentoActual = 0;
     
-    // Cerrar modales
+    // Cerrar 
     document.getElementById('checkoutModal').classList.add('hidden');
     document.getElementById('cartModal').classList.add('hidden');
     
@@ -748,7 +748,7 @@ function actualizarTodaLaUI() {
 }
 
 
-// GESTIÓN DE MODALES Y TABS
+// uso modales y tab
 
 function openModal(modalId) {
     document.getElementById(modalId).classList.remove('hidden');
@@ -775,7 +775,7 @@ function switchTab(tabName) {
 }
 
 
-// EVENT LISTENERS
+// eventos
 
 document.addEventListener('DOMContentLoaded', async function() {
     // Cargar datos
