@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "nombre": "Air Jordan 1 Retro",
+    "precio": 18000,
+    "cantidad": 1,
+    "categoria": "basquet",
+    "stock": 5,
+    "imagen": "https://acdn-us.mitiendanube.com/stores/001/160/313/products/f6c4b46e1-e4854ab78d79c1611016052167644378-1024-1024.webp"
+  },
+  {
+    "id": 2,
+    "nombre": "Nike Dunk Low",
+    "precio": 12000,
+    "cantidad": 1,
+    "categoria": "casual",
+    "stock": 8,
+    "imagen": "https://acdn-us.mitiendanube.com/stores/986/786/products/img_68031-78526e419e0fb103c516915072797706-1024-1024.webp"
+  },
+  {
+    "id": 3,
+    "nombre": "Adidas Forum",
+    "precio": 10000,
+    "cantidad": 1,
+    "categoria": "basquet",
+    "stock": 3,
+    "imagen": "https://images-cdn.ubuy.com.ar/65c519e2c2b3562b9e488927-adidas-forum-low-men-039-s.jpg"
+  },
+  {
+    "id": 4,
+    "nombre": "Converse Chuck Taylor",
+    "precio": 8000,
+    "cantidad": 1,
+    "categoria": "casual",
+    "stock": 10,
+    "imagen": "https://acdn-us.mitiendanube.com/stores/001/159/143/products/img_0783-6756beb465decda3dc17134505504531-1024-1024.webp"
+  },
+  {
+    "id": 5,
+    "nombre": "Nike Air Force 1",
+    "precio": 11000,
+    "cantidad": 1,
+    "categoria": "moda",
+    "stock": 6,
+    "imagen": "https://www.gotemkicks.com/cdn/shop/products/IMG_0207_720x.jpg?v=1677195765"
+  },
+  {
+    "id": 6,
+    "nombre": "Jordan 4 Retro",
+    "precio": 22000,
+    "cantidad": 1,
+    "categoria": "basquet",
+    "stock": 2,
+    "imagen": "http://admin.digitalsport.com.ar/files/uploads/DIONYSOS%202025/JORDAN%204%20SB/3e3aa5a2-da92-4bac-9ee1-f6de30d3c8d1.jpg"
+  }
+]
